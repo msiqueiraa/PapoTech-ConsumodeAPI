@@ -27,7 +27,14 @@ namespace PapoTech
         }
         public CidadeBase RetornaPorId(int id)
         {
-            return listaCidade[id];
+            try
+            {
+                return listaCidade[id];
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

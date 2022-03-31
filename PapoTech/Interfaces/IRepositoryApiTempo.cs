@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace PapoTech.Interfaces
 {
-    public interface ApiRepository
-    {
-      public Task<string> GetApi(string parametro1);
-    }
+    public interface IRepositoryApiTempo
+        {
+            public Task<string> GetApi(string Cidade, string Estado, string Pais);
+        }
+    
 }

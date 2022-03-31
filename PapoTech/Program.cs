@@ -33,7 +33,7 @@ namespace PapoTech
                         opcaoUsuario = ObterOpcaoUsuario();
                         break;
                     case "6":
-                        InserirCidadeCep();
+                        InserirCidadeCepAsync();
                         opcaoUsuario = ObterOpcaoUsuario();
                         break;
                     case "C":
@@ -130,30 +130,40 @@ namespace PapoTech
 
         private static void VisualizarCidade()
         {
-            Console.Write("Digite o ID da série: ");
+            Console.Write("Digite o ID da Cidade: ");
             int indiceCidade = int.Parse(Console.ReadLine());
 
             CidadeBase Cidade = repository.RetornaPorId(indiceCidade);
 
             Console.WriteLine(Cidade);
         }
-        private static void InserirCidadeCep()
+        private static async Task InserirCidadeCepAsync()
         {
             Console.WriteLine("Inserir nova Cidade a partir do CEP BR");
 
             Console.WriteLine("Digite o Cep da cidade, apenas números: ");
             int Cep = int.Parse(Console.ReadLine());
-            string CepString = Cep.ToString();
-            if(CepString.Length==8)
+            string CepString = Cep.ToString().Trim();
+            if (CepString.Length == 8)
             {
                 ViaCepApiRepository BuscaCep = new ViaCepApiRepository();
-                var Response = BuscaCep.GetApi(CepString);               
+                var Response = await BuscaCep.GetApi(CepString);
                 ResponseViaCep Res = JsonConvert.DeserializeObject<ResponseViaCep>(Response.ToString());
-                CidadeBase novaCidade = new CidadeBase(id: repository.ProximoId(), cidade: Res.RetornaLocalidade(), estado: Res.RetornaUF(), pais: "br");
-                repository.Insere(novaCidade);
+                if (Response.ToString().Contains("erro"))
+                {
+                    Console.WriteLine("Cep inválido");
+                }
+                else
+                {
+                    CidadeBase novaCidade = new CidadeBase(id: repository.ProximoId(), cidade: Res.RetornaLocalidade(), estado: Res.RetornaUF(), pais: "br");
+                    repository.Insere(novaCidade);
+                    Console.WriteLine("Cidade Cadastrada");
+                }
             }
-            Console.WriteLine("CEP inválido");
-
+            else
+            {
+                Console.WriteLine("CEP inválido");
+            }
         }
     }
 }

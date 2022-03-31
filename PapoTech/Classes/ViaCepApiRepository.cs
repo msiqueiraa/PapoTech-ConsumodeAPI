@@ -1,10 +1,9 @@
-﻿using Newtonsoft.Json;
-using PapoTech.Interfaces;
+﻿using PapoTech.Interfaces;
 
 
 namespace PapoTech.Classes
 {
-    public class ViaCepApiRepository
+    public class ViaCepApiRepository: IRepositoryApiCep
     {
         static readonly HttpClient client = new();           
        public async Task<String> GetApi(string Cep)
@@ -18,9 +17,7 @@ namespace PapoTech.Classes
                     
                     return responseBody;
                 }
-                
-                 return response.StatusCode.ToString(); 
-                
+                return "erro";                
             }
             catch (HttpRequestException e)
             {
