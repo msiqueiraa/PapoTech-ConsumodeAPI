@@ -3,7 +3,7 @@
 
 namespace PapoTech.Classes
 {
-    public class ViaCepApiRepository: IRepositoryApiCep
+    public class ViaCepApiConn: IRepositoryApi
     {
         static readonly HttpClient client = new();           
        public async Task<String> GetApi(string Cep)

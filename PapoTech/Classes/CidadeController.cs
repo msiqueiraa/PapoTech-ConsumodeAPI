@@ -2,7 +2,7 @@
 
 namespace PapoTech
 {
-    internal class CidadeRepository : IRepository<CidadeBase>
+    internal class CidadeController : IRepository<CidadeBase>
     {
         private readonly List<CidadeBase> listaCidade = new();
         public void Atualiza(int id, CidadeBase entity)

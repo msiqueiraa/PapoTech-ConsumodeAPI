@@ -22,8 +22,8 @@ namespace PapoTech
         {
             string retorno = "";
             retorno += "Cidade: " + this.Cidade + Environment.NewLine;
-            retorno += "Estado: " + this.Estado + Environment.NewLine;
-            retorno += "pais: " + this.Pais + Environment.NewLine;  
+            retorno += " Estado: " + this.Estado + Environment.NewLine;
+            retorno += " pais: " + this.Pais + Environment.NewLine;  
             return retorno;
         }
         public int RetornaId()

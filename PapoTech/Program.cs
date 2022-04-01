@@ -4,51 +4,13 @@ using PapoTech.Classes;
 namespace PapoTech
 {    class Program
     {
-        static CidadeRepository repository = new CidadeRepository();
+        static CidadeController repository = new CidadeController();
         static void Main(string[] args)
         {
-            string opcaoUsuario = ObterOpcaoUsuario();
-            while (opcaoUsuario!= "X")
-            {
-                switch (opcaoUsuario)
-                {
-                    case "1":
-                        ListarCidade();
-                        opcaoUsuario = ObterOpcaoUsuario();
-                        break;
-                    case "2":
-                        InserirCidade();
-                        opcaoUsuario = ObterOpcaoUsuario();
-                        break;
-                    case "3":
-                        AtualizarCidade();
-                        opcaoUsuario = ObterOpcaoUsuario();
-                        break;
-                    case "4":
-                        ExcluirCidade();
-                        opcaoUsuario = ObterOpcaoUsuario();
-                        break;
-                    case "5":
-                        VisualizarCidade();
-                        opcaoUsuario = ObterOpcaoUsuario();
-                        break;
-                    case "6":
-                        InserirCidadeCepAsync();
-                        opcaoUsuario = ObterOpcaoUsuario();
-                        break;
-                    case "C":
-                        Console.Clear();
-                        opcaoUsuario = ObterOpcaoUsuario();
-                        break;
-
-                    default:
-                        Console.WriteLine("Opção selecionada inválida");
-                        opcaoUsuario = ObterOpcaoUsuario();
-                        break;
-                }
-            }
+            Startup Init = new Startup();
+            Init.Start();         
         }
-        private static string ObterOpcaoUsuario()
+        public static string ObterOpcaoUsuario()
         {
             Console.WriteLine();
             Console.WriteLine("Informe a opção desejada: ");
@@ -58,7 +20,7 @@ namespace PapoTech
             Console.WriteLine("4- Excluir Cidade");
             Console.WriteLine("5- Visualizar cidade");
             Console.WriteLine("6- Inserir cidade pelo CEP");
-            Console.WriteLine("6- Executar script");
+            Console.WriteLine("7- Verificar tempo nas cidades salvas");
             Console.WriteLine("C- Limpar Tela");
             Console.WriteLine("X- Sair");
             Console.WriteLine();
@@ -68,7 +30,7 @@ namespace PapoTech
             return opcaoUsuario;
         }
 
-        private static void ListarCidade()
+        public static void ListarCidade()
         {
             Console.WriteLine("Listar cidades");
             var lista = repository.Lista();
@@ -83,7 +45,7 @@ namespace PapoTech
                 Console.WriteLine("#ID {0}-{1}-{2}", cidade.RetornaId(), cidade.RetornaCidade(),cidade.RetornaEstado(), excluido ? "- Cidade excluída. ": "");
             }
         }
-        private static void InserirCidade()
+        public static void InserirCidade()
         {
             Console.WriteLine("Inserir nova Cidade");
             
@@ -101,7 +63,7 @@ namespace PapoTech
             repository.Insere(novaCidade);
 
         }
-        private static void AtualizarCidade()
+        public static void AtualizarCidade()
         {
             Console.Write("Digite o ID da cidade ");
             int indiceCidade = int.Parse(Console.ReadLine());
@@ -120,7 +82,7 @@ namespace PapoTech
 
             repository.Atualiza(indiceCidade, atualizaCidade);
         }
-        private static void ExcluirCidade()
+        public static void ExcluirCidade()
         {
             Console.Write("Digite o ID da Cidade: ");
             int indiceCidade = int.Parse(Console.ReadLine());
@@ -128,7 +90,7 @@ namespace PapoTech
             repository.Exclui(indiceCidade);
         }
 
-        private static void VisualizarCidade()
+        public static void VisualizarCidade()
         {
             Console.Write("Digite o ID da Cidade: ");
             int indiceCidade = int.Parse(Console.ReadLine());
@@ -137,7 +99,7 @@ namespace PapoTech
 
             Console.WriteLine(Cidade);
         }
-        private static async Task InserirCidadeCepAsync()
+        public static async Task InserirCidadeCepAsync()
         {
             Console.WriteLine("Inserir nova Cidade a partir do CEP BR");
 
@@ -146,7 +108,7 @@ namespace PapoTech
             string CepString = Cep.ToString().Trim();
             if (CepString.Length == 8)
             {
-                ViaCepApiRepository BuscaCep = new ViaCepApiRepository();
+                ViaCepApiConn BuscaCep = new ViaCepApiConn();
                 var Response = await BuscaCep.GetApi(CepString);
                 ResponseViaCep Res = JsonConvert.DeserializeObject<ResponseViaCep>(Response.ToString());
                 if (Response.ToString().Contains("erro"))
@@ -163,6 +125,18 @@ namespace PapoTech
             else
             {
                 Console.WriteLine("CEP inválido");
+            }
+        }
+        public static async Task VerificaTempoCidade()
+        {
+            var lista = repository.Lista();
+            Console.WriteLine("Tempo nas cidades: ");
+            foreach (var cidade in lista)
+            {
+                TempoConn tempoRepository = new TempoConn();
+                var Response = await tempoRepository.GetApi(cidade.RetornaCidade().ToString());
+                Root Res = JsonConvert.DeserializeObject<Root>(Response.ToString());
+                Console.WriteLine("Cidade: {0} - Céu: {1} -  Temperatura: {2} - Sensação Térmica: {3} - Temperatura Mín: {4} - Temperatura Máx: {5} - Velocidade do Vento: {6}", cidade, Res.weather[0].description, Res.main.temp, Res.main.feels_like, Res.main.temp_min, Res.main.temp_max, Res.wind.speed);                               
             }
         }
     }
